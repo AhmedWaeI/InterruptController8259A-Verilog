@@ -1,5 +1,4 @@
-// Code your design here
-module KF8259_Priority_Resolver (
+module Priority_Resolver (
  
   input [7:0] interrupt_mask,
 
@@ -52,37 +51,37 @@ module KF8259_Priority_Resolver (
             end
           if(masked_interrupt_request[1]==1'b)
             begin
-              anothermode_irr={anothermode_irr[0], anothermode_irr[7:1]};
+              anothermode_irr={anothermode_irr[1:0], anothermode_irr[7:2]};
               masked_interrupt_request=anothermode_irr & ~interrupt_mask;
               interrupt=8'b10;
             end
           if(masked_interrupt_request[2]==1'b)
             begin
-              anothermode_irr={anothermode_irr[0], anothermode_irr[7:1]};
+              anothermode_irr={anothermode_irr[2:0], anothermode_irr[7:3]};
               masked_interrupt_request=anothermode_irr & ~interrupt_mask;
               interrupt=8'b100;
             end
           if(masked_interrupt_request[3]==1'b)
             begin
-              anothermode_irr={anothermode_irr[0], anothermode_irr[7:1]};
+              anothermode_irr={anothermode_irr[3:0], anothermode_irr[7:4]};
               masked_interrupt_request=anothermode_irr & ~interrupt_mask;
               interrupt=8'b1000;
             end
           if(masked_interrupt_request[4]==1'b)
             begin
-              anothermode_irr={anothermode_irr[0], anothermode_irr[7:1]};
+              anothermode_irr={anothermode_irr[4:0], anothermode_irr[7:5]};
               masked_interrupt_request=anothermode_irr & ~interrupt_mask;
               interrupt=8'b10000;
             end
           if(masked_interrupt_request[5]==1'b)
             begin
-              anothermode_irr={anothermode_irr[0], anothermode_irr[7:1]};
+              anothermode_irr={anothermode_irr[5:0], anothermode_irr[7:6]};
               masked_interrupt_request=anothermode_irr & ~interrupt_mask;
               interrupt=8'b100000;
             end
           if(masked_interrupt_request[6]==1'b)
             begin
-              anothermode_irr={anothermode_irr[0], anothermode_irr[7:1]};
+              anothermode_irr={anothermode_irr[6:0], anothermode_irr[7]};
               masked_interrupt_request=anothermode_irr & ~interrupt_mask;
               interrupt=8'10000000;
             end
