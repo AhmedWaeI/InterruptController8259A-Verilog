@@ -1,5 +1,5 @@
 // Code your design here
-module Priority_Resolver (
+module KF8259_Priority_Resolver (
  
   input [7:0] interrupt_mask,
 
@@ -25,19 +25,19 @@ module Priority_Resolver (
         if(masked_interrupt_request[0]==1'b)
           interrupt=8'b1;
         if(masked_interrupt_request[1]==1'b)
-          2:interrupt=8'b10;
+          interrupt=8'b10;
         if(masked_interrupt_request[2]==1'b)
-          2:interrupt=8'b100;
+          interrupt=8'b100;
         if(masked_interrupt_request[3]==1'b)
-          2:interrupt=8'b1000;
+          interrupt=8'b1000;
         if(masked_interrupt_request[4]==1'b)
-          2:interrupt=8'b10000;
+          interrupt=8'b10000;
         if(masked_interrupt_request[5]==1'b)
-          2:interrupt=8'b100000;
+          interrupt=8'b100000;
         if(masked_interrupt_request[6]==1'b)
-          2:interrupt=8'b1000000;
+          interrupt=8'b1000000;
         if(masked_interrupt_request[7]==1'b)
-          2:interrupt=8'b10000000;
+          interrupt=8'b10000000;
       end
     end
   else
