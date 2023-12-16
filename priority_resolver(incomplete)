@@ -1,0 +1,41 @@
+// Code your design here
+module KF8259_Priority_Resolver (
+ 
+  input [7:0] interrupt_mask,
+
+  
+  // Inputs  
+  input [7:0] interrupt_request_register,
+  input [7:0] in_service_register,
+   
+  // Outputs
+  output [7:0] interrupt
+);
+
+
+  wire [7:0] masked_interrupt_request;
+
+
+  assign masked_interrupt_request = interrupt_request_register & ~interrupt_mask;
+
+  always(masked_interrupt_request)
+    begin
+      if(masked_interrupt_request[0]==1'b)
+        interrupt=8'b1;
+      if(masked_interrupt_request[1]==1'b)
+        2:interrupt=8'b10;
+      if(masked_interrupt_request[2]==1'b)
+        2:interrupt=8'b100;
+      if(masked_interrupt_request[3]==1'b)
+        2:interrupt=8'b1000;
+      if(masked_interrupt_request[4]==1'b)
+        2:interrupt=8'b10000;
+      if(masked_interrupt_request[5]==1'b)
+        2:interrupt=8'b100000;
+      if(masked_interrupt_request[6]==1'b)
+        2:interrupt=8'b1000000;
+      if(masked_interrupt_request[7]==1'b)
+        2:interrupt=8'b10000000;
+    end
+
+endmodule
