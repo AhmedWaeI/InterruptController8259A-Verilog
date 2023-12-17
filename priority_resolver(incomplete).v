@@ -17,7 +17,23 @@ module PriorityResolver (
     reg eoi_received;
     reg [2:0] automatic_priority;
 
-    assign highest_priority = ($clog2(masked_priority + 1)) ? ($clog2(masked_priority + 1) - 1) : 3'd0;
+    reg [2:0] priority_wire;
+	
+    always @* begin
+        case(masked_priority)
+            8'b00000001: priority_wire = 3'b000;
+            8'b00000010: priority_wire = 3'b001;
+            8'b00000100: priority_wire = 3'b010;
+            8'b00001000: priority_wire = 3'b011;
+            8'b00010000: priority_wire = 3'b100;
+            8'b00100000: priority_wire = 3'b101;
+            8'b01000000: priority_wire = 3'b110;
+            8'b10000000: priority_wire = 3'b111;
+            default: priority_wire = 3'b111; // Set a default value
+        endcase
+    end
+
+    assign highest_priority = priority_wire;
 
     always @* begin
         masked_irr = irr & ~imr & ~{3'b0, ocw[2:0]};
@@ -35,7 +51,6 @@ module PriorityResolver (
         end else begin
             if (rotation_enabled && eoi_received && ocw == 3'b001 && inta) begin
                 automatic_priority <= (last_serviced_priority + 1) % 8;
-                // Service the highest pending interrupt in rotation mode
                 if (masked_priority[automatic_priority] && automatic_priority != last_serviced_priority) begin
                     last_serviced_priority <= automatic_priority;
                     isr[last_serviced_priority] <= 1'b1;
@@ -50,7 +65,10 @@ module PriorityResolver (
             isr <= 8'b0;
         end else begin
             if (ocw == 3'b000 && masked_priority != 8'b0)
+              begin
+                isr <= 8'b0;
                 isr[highest_priority] <= 1'b1;
+              end
         end
     end
 
