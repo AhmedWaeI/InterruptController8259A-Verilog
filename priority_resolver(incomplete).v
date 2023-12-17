@@ -1,54 +1,79 @@
 module PriorityResolver (
-    input wire [7:0] IRR,  // Interrupt Request Register
-    input wire [7:0] IMR,  // Interrupt Mask Register
-    input wire [3:0] OCW,  // Operation Control Words OCW2 (L2, L1, L0) and OCW3 (ESMM, SMM)
-    output reg [7:0] ISR   // Interrupt Service Register
+    input wire clk,
+    input wire reset,
+    input wire [7:0] irr,
+    input wire [7:0] imr,
+    input wire [3:0] ocw,
+    input wire inta,
+    input wire eoi, // Wire input
+    output reg [7:0] isr, // Reg output
+    output wire [2:0] highest_priority
 );
 
-    reg [7:0] masked_IRR;      // Masked Interrupt Request Register
-    reg [7:0] masked_priority; // Masked priority register
-    reg highest_priority;
+    // Internal registers
+    reg [7:0] masked_irr;
+    reg [7:0] masked_priority;
+    reg [2:0] last_serviced_priority = 0; // Initialize to zero
+    reg rotation_enabled;
+    reg eoi_received; // Reg for processing eoi
+	reg [7:0] mask;
 
-    // Register to store the last serviced priority for rotation
-    reg [2:0] last_serviced_priority = 3'b000;
+    // Combinational logic
+    assign highest_priority = $clog2(masked_priority);
 
-    reg eoi_issued; // Temporary variable to store OCW[3]
-
+    // Always @* block for state updates
     always @* begin
-        // Apply masking based on OCW1 and IMR
-        masked_IRR = IRR & ~IMR & ~{3'b0, OCW[2:0]};
+        masked_irr = irr & ~imr & ~{3'b0, ocw[2:0]};
+        // Option 1: Using a temporary variable (preferred for clarity)
+      
+        mask = {8'b1111_1111} << (8 - masked_irr);
+        masked_priority = masked_irr & mask;
+        rotation_enabled = ocw[2] == 1'b1;
+        eoi_received = eoi ? 1'b1 : 1'b0;
 
-        // Logic to determine the highest priority bit in the masked IRR
-        masked_priority = masked_IRR & (masked_IRR ^ (masked_IRR - 1));
-        highest_priority = masked_priority != 8'b0000_0000 ? $clog2(masked_priority) : 0;
-
-        // Fully Nested Mode
-        if (OCW[2:0] == 3'b000) begin
-            // Check if highest priority interrupt is acknowledged
-            if (highest_priority != 0) begin
-                // Strobing the highest priority into the ISR during INTA pulse or as required
-                ISR[highest_priority] <= 1;
-
-                // Mask lower priority interrupts until EOI (not implemented)
-                ISR <= ISR & ((1 << highest_priority) - 1);
-
-                // Store OCW[3] value in temporary variable
-                eoi_issued = OCW[3];
-
-                // Check if EOI is issued (for illustration purposes)
-                if (eoi_issued == 1'b1) begin
-                    // Clear ISR bit after EOI command (basic illustration)
-                    ISR[highest_priority] <= 0;
-                end
+        // Fully Nested Mode logic
+        if (ocw[2:0] == 3'b000) begin
+            if (masked_priority != 8'b0000_0000 && highest_priority >= last_serviced_priority) begin
+                last_serviced_priority = highest_priority;
             end
         end else begin
-            // Rotation Mode
-            // Check if any interrupt is pending and needs rotation
-            if (highest_priority != 0 && highest_priority != last_serviced_priority) begin
-                last_serviced_priority <= highest_priority;
-                ISR <= {ISR[highest_priority], ISR[7:1]};
+            // Rotation Mode logic
+            if (rotation_enabled) begin
+                if (ocw[1:0] == 2'b01 && eoi_received) begin
+                    last_serviced_priority <= (last_serviced_priority + 1) % 8; // Adjusted assignment to use '<='
+                end else if (ocw[1:0] == 2'b00) begin
+                    last_serviced_priority <= (last_serviced_priority + 1) % 8; // Adjusted assignment to use '<='
+                end
+            end
+        end
+
+        // ISR manipulation based on EOI and service completion
+        if (eoi && ocw[2:0] == 3'b000) begin
+            // Clear the serviced bit upon EOI in fully nested mode
+            isr[highest_priority] <= 1'b0; // Changed '=' to '<=' for sequential logic
+        end else if (masked_priority[last_serviced_priority] == 1'b0 && ocw[2:0] == 3'b000) begin
+            // Clear the ISR bit if the last serviced interrupt is no longer pending in fully nested mode
+            isr[last_serviced_priority] <= 1'b0; // Changed '=' to '<=' for sequential logic
+        end
+
+        // Set highest priority bit in ISR during INTA (fully nested mode)
+        if (ocw[2:0] == 3'b000 && masked_priority != 8'b0000_0000 && inta) begin
+            isr[highest_priority] <= 1'b1; // Changed '=' to '<=' for sequential logic
+        end
+    end
+
+    // Positive edge triggered logic
+    always @(posedge clk or posedge reset) begin
+        if (reset) begin
+            last_serviced_priority <= 0;
+            eoi_received <= 0;
+            isr <= 8'b0; // Initialize ISR to all zeros
+        end else begin
+            // Strobe highest priority bit into ISR (fully nested mode)
+            if (ocw[2:0] == 3'b000 && masked_priority != 8'b0000_0000 && inta) begin
+                isr[highest_priority] <= 1'b1;
             end
         end
     end
-     
+
 endmodule
