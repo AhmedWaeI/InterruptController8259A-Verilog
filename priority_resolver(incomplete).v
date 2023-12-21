@@ -1,3 +1,5 @@
+
+
 module PriorityResolver (
   // Inputs from control logic
   input   [2:0]   priority_rotate,
@@ -11,7 +13,7 @@ module PriorityResolver (
   input   [7:0]   in_service_register,
 
   // Outputs
-  output  [7:0]   interrupt
+  output reg  [7:0]   interrupt
 );
   // Masked flags
   reg   [7:0]   masked_interrupt_request;
@@ -22,7 +24,7 @@ module PriorityResolver (
   reg   [7:0]   rotated_highest_level_in_service;
   reg   [7:0]   rotated_in_service;
   reg   [7:0]   priority_mask;
-  reg   [7:0]   rotated_interrupt;
+  wire   [7:0]   rotated_interrupt;
   reg   [7:0]   resolv_priority;
 
   // Rotate and resolve priority logic
@@ -46,19 +48,29 @@ module PriorityResolver (
             3'b000: rotated_highest_level_in_service = { highest_level_in_service[0], highest_level_in_service[7:1] };
             3'b001: rotated_highest_level_in_service = { highest_level_in_service[1:0], highest_level_in_service[7:2] };
             3'b010: rotated_highest_level_in_service = { highest_level_in_service[2:0], highest_level_in_service[7:3] };
-            3'b011: rotated_highest_level_in_service = { highest_level_in_service[3:0], masked_interrupt_request[7:4] };
+            3'b011: rotated_highest_level_in_service = { highest_level_in_service[3:0], highest_level_in_service[7:4] };
             3'b100: rotated_highest_level_in_service = { highest_level_in_service[4:0], highest_level_in_service[7:5] };
             3'b101: rotated_highest_level_in_service = { highest_level_in_service[5:0], highest_level_in_service[7:6] };
             3'b110: rotated_highest_level_in_service = { highest_level_in_service[6:0], highest_level_in_service[7] };
             default: rotated_highest_level_in_service = highest_level_in_service;
         endcase
+    case(priority_rotate)
+            3'b000: rotated_in_service = { masked_in_service[0], masked_in_service[7:1] };
+            3'b001: rotated_in_service = { masked_in_service[1:0], masked_in_service[7:2] };
+            3'b010: rotated_in_service = { masked_in_service[2:0], masked_in_service[7:3] };
+            3'b011: rotated_in_service = { masked_in_service[3:0], masked_in_service[7:4] };
+            3'b100: rotated_in_service = { masked_in_service[4:0], masked_in_service[7:5] };
+            3'b101: rotated_in_service = { masked_in_service[5:0], masked_in_service[7:6] };
+            3'b110: rotated_in_service = { masked_in_service[6:0], masked_in_service[7] };
+            default: rotated_in_service = masked_in_service;
+        endcase
+    
   end
-  always(*)
+  
+  always@(*)
     begin
     if (special_fully_nest_config == 1'b1)
-      rotated_in_service = {masked_in_service[7-priority_rotate:0],masked_in_service[7:7-priority_rotate]} & ~rotated_highest_level_in_service | {rotated_highest_level_in_service[6:0], 1'b0};
-    else
-      rotated_in_service = {masked_in_service[7-priority_rotate:0],masked_in_service[7:7-priority_rotate]};
+      rotated_in_service = (rotated_in_service & ~rotated_highest_level_in_service)| {rotated_highest_level_in_service[6:0], 1'b0};
     end
 
   always@(*) begin
@@ -87,6 +99,19 @@ module PriorityResolver (
 
   
   assign rotated_interrupt =  resolv_priority & priority_mask;
-  assign interrupt = {rotated_interrupt[priority_rotate:7],rotated_interrupt[7:priority_rotate+1]}; 
+  always@(*)
+    begin
+      case(priority_rotate)
+            3'b000: interrupt = { rotated_interrupt[6:0], rotated_interrupt[7] };
+            3'b001: interrupt = { rotated_interrupt[5:0], rotated_interrupt[7:6] };
+            3'b010: interrupt = { rotated_interrupt[4:0], rotated_interrupt[7:5] };
+            3'b011: interrupt = { rotated_interrupt[3:0], rotated_interrupt[7:4] };
+            3'b100: interrupt = { rotated_interrupt[2:0], rotated_interrupt[7:3] };
+            3'b101: interrupt = { rotated_interrupt[1:0], rotated_interrupt[7:2] };
+            3'b110: interrupt = { rotated_interrupt[0], rotated_interrupt[7:1] };
+            3'b111: interrupt = rotated_interrupt;
+            default: interrupt = rotated_interrupt;
+        endcase
+    end
 
 endmodule
