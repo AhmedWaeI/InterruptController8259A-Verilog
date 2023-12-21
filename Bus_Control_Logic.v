@@ -71,7 +71,7 @@ module Bus_Control_Logic (
     assign write_operation_control_word_3 = write_flag & ~stable_address & ~internal_data_bus[4] & internal_data_bus[3];
 
     //
-    // Read Control
+    // Read Control (when read enabledand chip selected)
     //
     assign read = ~RD  & ~CS; //read if chip selected and read enabled
 
