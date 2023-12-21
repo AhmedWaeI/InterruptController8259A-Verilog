@@ -1,44 +1,3 @@
-module rotate_right (
-    input [7:0] source,
-    input [2:0] rotate,
-    output reg [7:0] rotate_right_output
-);
-
-    always @* begin
-        case(rotate)
-            3'b000: rotate_right_output = { source[0], source[7:1] };
-            3'b001: rotate_right_output = { source[1:0], source[7:2] };
-            3'b010: rotate_right_output = { source[2:0], source[7:3] };
-            3'b011: rotate_right_output = { source[3:0], source[7:4] };
-            3'b100: rotate_right_output = { source[4:0], source[7:5] };
-            3'b101: rotate_right_output = { source[5:0], source[7:6] };
-            3'b110: rotate_right_output = { source[6:0], source[7] };
-            default: rotate_right_output = source;
-        endcase
-    end
-
-endmodule
-
-module resolv_priority(
-    input [7:0] request,
-    output reg [7:0] resolv_priority
-);
-
-    always @* begin
-        if (request[0] == 1'b1) resolv_priority = 8'b00000001;
-        else if (request[1] == 1'b1) resolv_priority = 8'b00000010;
-        else if (request[2] == 1'b1) resolv_priority = 8'b00000100;
-        else if (request[3] == 1'b1) resolv_priority = 8'b00001000;
-        else if (request[4] == 1'b1) resolv_priority = 8'b00010000;
-        else if (request[5] == 1'b1) resolv_priority = 8'b00100000;
-        else if (request[6] == 1'b1) resolv_priority = 8'b01000000;
-        else if (request[7] == 1'b1) resolv_priority = 8'b10000000;
-        else resolv_priority = 8'b00000000;
-    end
-
-endmodule
-
-
 module PriorityResolver (
   // Inputs from control logic
   input   [2:0]   priority_rotate,
@@ -65,20 +24,42 @@ module PriorityResolver (
   reg   [7:0]   priority_mask;
   reg   [7:0]   rotated_interrupt;
   reg   [7:0]   resolv_priority;
-  rotate_left_right m
 
   // Rotate and resolve priority logic
   always@(*) begin
     masked_interrupt_request = interrupt_request_register & ~interrupt_mask;
     masked_in_service = in_service_register & ~interrupt_special_mask;
-    rotate_right m(masked_interrupt_request,priority_rotate,rotated_request)
-    rotate_right n(highest_level_in_service,priority_rotate,rotated_highest_level_in_service)
+  end
+  always@(*) begin
     
+    case(priority_rotate)
+            3'b000: rotated_request = { masked_interrupt_request[0], masked_interrupt_request[7:1] };
+            3'b001: rotated_request = { masked_interrupt_request[1:0], masked_interrupt_request[7:2] };
+            3'b010: rotated_request = { masked_interrupt_request[2:0], masked_interrupt_request[7:3] };
+            3'b011: rotated_request = { masked_interrupt_request[3:0], masked_interrupt_request[7:4] };
+            3'b100: rotated_request = { masked_interrupt_request[4:0], masked_interrupt_request[7:5] };
+            3'b101: rotated_request = { masked_interrupt_request[5:0], masked_interrupt_request[7:6] };
+            3'b110: rotated_request = { masked_interrupt_request[6:0], masked_interrupt_request[7] };
+            default: rotated_request = masked_interrupt_request;
+        endcase
+    case(priority_rotate)
+            3'b000: rotated_highest_level_in_service = { highest_level_in_service[0], highest_level_in_service[7:1] };
+            3'b001: rotated_highest_level_in_service = { highest_level_in_service[1:0], highest_level_in_service[7:2] };
+            3'b010: rotated_highest_level_in_service = { highest_level_in_service[2:0], highest_level_in_service[7:3] };
+            3'b011: rotated_highest_level_in_service = { highest_level_in_service[3:0], masked_interrupt_request[7:4] };
+            3'b100: rotated_highest_level_in_service = { highest_level_in_service[4:0], highest_level_in_service[7:5] };
+            3'b101: rotated_highest_level_in_service = { highest_level_in_service[5:0], highest_level_in_service[7:6] };
+            3'b110: rotated_highest_level_in_service = { highest_level_in_service[6:0], highest_level_in_service[7] };
+            default: rotated_highest_level_in_service = highest_level_in_service;
+        endcase
+  end
+  always(*)
+    begin
     if (special_fully_nest_config == 1'b1)
       rotated_in_service = {masked_in_service[7-priority_rotate:0],masked_in_service[7:7-priority_rotate]} & ~rotated_highest_level_in_service | {rotated_highest_level_in_service[6:0], 1'b0};
     else
       rotated_in_service = {masked_in_service[7-priority_rotate:0],masked_in_service[7:7-priority_rotate]};
-  end
+    end
 
   always@(*) begin
     if      (rotated_in_service[0] == 1'b1) priority_mask = 8'b00000000;
