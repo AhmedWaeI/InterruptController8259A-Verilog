@@ -1,5 +1,3 @@
-
-
 module PriorityResolver (
   // Inputs from control logic
   input   [2:0]   priority_rotate,
