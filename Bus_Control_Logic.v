@@ -34,7 +34,7 @@ module Bus_Control_Logic (
     //
     // Write Control
     //
-    always @(negedge clock, posedge reset) begin
+    always @(posedge reset) begin
         if (reset) //upon reset clear the internal data bus
             internal_data_bus <= 8'b00000000;
         else if (~WR & ~CS) //if write enabled and chip selected set to 8259A buffer the input data
@@ -43,7 +43,7 @@ module Bus_Control_Logic (
             internal_data_bus <= internal_data_bus;
     end
 
-    always @(negedge clock, posedge reset) begin
+    always @( posedge reset) begin
         if (reset)
             prev_WR <= 1'b1; //means WR not enabled if there is reset
         else if (CS)
@@ -54,7 +54,7 @@ module Bus_Control_Logic (
     assign write_flag = ~prev_WR & WR; 
 //The write_flag signal is a logical AND of the negation of prev_WR and WR. It becomes active (high) when 
 //there is a rising edge transition on the WR signal.
-    always @(negedge clock, posedge reset) begin
+    always @(posedge reset) begin
         if (reset)
             stable_address <= 1'b0;
         else
