@@ -13,9 +13,9 @@ module ControlLogic (
   input wire WR,            // Write control signal
   input wire ICW1_RECEIVED, //initial command word 1
   input wire ICW2_RECEIVED, //initial command word 2
-  input wire OCW1_RECEIVED,  
-  input wire OCW2_RECEIVED,
-  input wire OCW3_RECEIVED,
+  input wire OCW1_RECEIVED,  //operation command word 1
+  input wire OCW2_RECEIVED,  //operation command word 2
+  input wire OCW3_RECEIVED,  //operation command word 3
   input wire [7:0] DATA_IN,  // Data bus from other blocks
   output wire [7:0] IV,      // Interrupt Vector
   output wire [1:0] CAS,     // Cascade Signals
@@ -24,7 +24,7 @@ module ControlLogic (
 );
 
   // Registers for command words
-  reg [7:0] icw1, icw2, icw3, icw4; // Initialization Command Words
+  reg [7:0] icw1, icw2, icw3, icw4; // Initialization all Command Words
   reg [7:0] ocw1, ocw2, ocw3;       // Operation Command Words
 
   // Internal signals
