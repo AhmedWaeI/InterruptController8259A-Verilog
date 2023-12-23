@@ -11,8 +11,8 @@ module ControlLogic (
   input wire RESET,
   input wire RD,            // Read control signal
   input wire WR,            // Write control signal
-  input wire ICW1_RECEIVED,
-  input wire ICW2_RECEIVED,
+  input wire ICW1_RECEIVED, //initial command word 1
+  input wire ICW2_RECEIVED, //initial command word 2
   input wire OCW1_RECEIVED,  
   input wire OCW2_RECEIVED,
   input wire OCW3_RECEIVED,
