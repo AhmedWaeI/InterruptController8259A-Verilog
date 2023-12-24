@@ -27,13 +27,13 @@ module Bus_Control_Logic (
     assign data_bus_buffer_out = (~RD & ~CS) ? internal_data_bus : 8'bzzzzzzzz;
     
     // Generate write request flags
-    assign write_initial_command_word_1   = write_flag & ~stable_address & internal_data_bus[4];
-    assign write_initial_command_word_2 = write_flag & stable_address;
-    assign write_initial_command_word_3 = write_flag & ~stable_address & ~internal_data_bus[4] & ~internal_data_bus[1];
-    assign write_initial_command_word_4 = write_flag & stable_address;
-    assign write_operation_control_word_1 = write_flag & stable_address;
-    assign write_operation_control_word_2 = write_flag & ~stable_address & ~internal_data_bus[4] & ~internal_data_bus[3];
-    assign write_operation_control_word_3 = write_flag & ~stable_address & ~internal_data_bus[4] & internal_data_bus[3];
+    assign write_initial_command_word_1   = write_flag & address & internal_data_bus[4];
+    assign write_initial_command_word_2 = write_flag & address;
+    assign write_initial_command_word_3 = write_flag & address & ~internal_data_bus[4] & ~internal_data_bus[1];
+    assign write_initial_command_word_4 = write_flag & address;
+    assign write_operation_control_word_1 = write_flag & address;
+    assign write_operation_control_word_2 = write_flag & address & ~internal_data_bus[4] & ~internal_data_bus[3];
+    assign write_operation_control_word_3 = write_flag & address & ~internal_data_bus[4] & internal_data_bus[3];
 
     //
     // Read Control (when read enabledand chip selected)
