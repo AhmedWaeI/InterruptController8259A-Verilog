@@ -15,27 +15,86 @@ module PriorityResolver (
  reg	[7:0] bottle;
  reg	[7:0] rotatedmask;
  reg	[7:0] rotatedirr;
-  
+ reg	[7:0] rotatedmaskedirr;
+  reg	[7:0] rotatedmaskedirr2;
+ 
+
  always@(*)
   begin
    masked_interrupt_request=interrupt_request_register& ~interrupt_mask;
    inservicemask=masked_interrupt_request;
  	 bottle=interrupt_request_register;
-   rotatedmask=masked_interrupt_request;
+   rotatedmask=interrupt_mask;
   end
  always@(*)
   begin  
- 	 rotatedirr=masked_interrupt_request;
+ 	 rotatedirr=interrupt_request_register;
   end
-  
-  
-
+ always@(*)
+   begin
+     if(highest_level_in_service[0]==1)
+       begin
+         rotatedirr=(interrupt_request_register>>1) | (interrupt_request_register<<7);
+        rotatedmaskedirr= (interrupt_mask >> 1) | (interrupt_mask<<7);
+        rotatedmaskedirr=rotatedirr&~rotatedmaskedirr;
+       end
+         if(highest_level_in_service[1]==1)
+       begin
+         rotatedirr=(interrupt_request_register>>2) | (interrupt_request_register<<6);
+         rotatedmaskedirr= (interrupt_mask >> 2) | (interrupt_mask<<6);
+        rotatedmaskedirr=rotatedirr&~rotatedmaskedirr;
+       end
+         if(highest_level_in_service[2]==1)
+       begin
+         rotatedirr=(interrupt_request_register>>3) | (interrupt_request_register<<5);
+         rotatedmaskedirr= (interrupt_mask >> 3) | (interrupt_mask<<5);
+        rotatedmaskedirr=rotatedirr&~rotatedmaskedirr;
+       end
+         if(highest_level_in_service[3]==1)
+       begin
+         rotatedirr=(interrupt_request_register>>4) | (interrupt_request_register<<4);
+         rotatedmaskedirr= (interrupt_mask >> 4) | (interrupt_mask<<4);
+        rotatedmaskedirr=rotatedirr&~rotatedmaskedirr;
+       end
+         if(highest_level_in_service[4]==1)
+       begin
+         rotatedirr=(interrupt_request_register>>5) | (interrupt_request_register<<3);
+         rotatedmaskedirr= (interrupt_mask >> 5) | (interrupt_mask<<3);
+        rotatedmaskedirr=rotatedirr&~rotatedmaskedirr;
+       end
+         if(highest_level_in_service[5]==1)
+       begin
+         rotatedirr=(interrupt_request_register>>6) | (interrupt_request_register<<2);
+         rotatedmaskedirr= (interrupt_mask >> 6) | (interrupt_mask<<2);
+        rotatedmaskedirr=rotatedirr&~rotatedmaskedirr;
+       end
+         if(highest_level_in_service[6]==1)
+       begin
+         rotatedirr=(interrupt_request_register>>7) | (interrupt_request_register<<1);
+        rotatedmaskedirr= (interrupt_mask >> 1) | (interrupt_mask<<7);
+        rotatedmaskedirr=rotatedirr&~rotatedmaskedirr;
+       end
+         if(highest_level_in_service[7]==1)
+       begin
+         rotatedirr=interrupt_request_register; 
+        rotatedmaskedirr= interrupt_mask; 
+        rotatedmaskedirr=rotatedirr&~rotatedmaskedirr;
+       end
+     if(highest_level_in_service==0)
+       begin
+         rotatedmaskedirr=masked_interrupt_request; 
+       end
+   end
+  always@(*)
+    begin
+      rotatedmaskedirr2=rotatedmaskedirr;
+    end
   
  always@(masked_interrupt_request)
   begin
    if(in_service_register==0)
     begin
-     if(mode==0 || mode==1)
+     if(mode==0 )
       begin
         
        if(inservicemask[0]==1) begin 
@@ -77,80 +136,58 @@ module PriorityResolver (
   end
   
   
-  always@(masked_interrupt_request)
+  always@(rotatedmaskedirr)
   begin
-    rotatedirr=inservicemask;
-    bottle=inservicemask;
+
    if(in_service_register==0)
     begin
      if(mode==1)
       begin
-       if(inservicemask[0]==1) begin 
+       if(rotatedmaskedirr2[0]==1) begin 
         interrupt=1; 
-        inservicemask=inservicemask&1;
-        bottle= (bottle >> 1) | (bottle<<7);
-        rotatedmask=rotatedmask>>1 | rotatedmask<<7;
-        rotatedirr=bottle;
+        rotatedmaskedirr2=rotatedmaskedirr2&1;
+   
        end
-       if(inservicemask[1]==1) begin 
+       if(rotatedmaskedirr2[1]==1) begin 
         interrupt=2; 
-        inservicemask=inservicemask&2;
-        bottle=bottle >> 2 | bottle<<6;
-        rotatedmask=rotatedmask>>2 | rotatedmask<<6;
-        rotatedirr=bottle;
+        rotatedmaskedirr2=rotatedmaskedirr2&2;
        end
-       if(inservicemask[2]==1) begin 
-        interrupt=4; 
-        inservicemask=inservicemask&4;
-        bottle=inservicemask >> 3 | inservicemask<<5;
-        rotatedmask=rotatedmask>>3 | rotatedmask<<5;
-        rotatedirr=bottle;
+       if(rotatedmaskedirr2[2]==1) begin 
+          interrupt=4; 
+        rotatedmaskedirr2=rotatedmaskedirr2&4;      
+         
        end
-       if(inservicemask[3]==1) begin 
+       if(rotatedmaskedirr2[3]==1) begin 
         interrupt=8; 
-        inservicemask=inservicemask&8;
-        bottle=bottle >> 4 | bottle<<4;
-        rotatedmask=rotatedmask>>4 | rotatedmask<<4;
-        rotatedirr=bottle;
+        rotatedmaskedirr2=rotatedmaskedirr2&8;
+
        end
-       if(inservicemask[4]==1) begin 
+       if(rotatedmaskedirr2[4]==1) begin 
         interrupt=16; 
-        inservicemask=inservicemask&16;
-        bottle = bottle >> 5 | bottle<<3;
-        rotatedmask=rotatedmask>>5 | rotatedmask<<3;
-        rotatedirr=bottle;
+        rotatedmaskedirr2=rotatedmaskedirr2&16;
+
        end
-       if(inservicemask[5]==1) begin 
+       if(rotatedmaskedirr2[5]==1) begin 
         interrupt=32; 
-        inservicemask=inservicemask&32;
-        bottle=bottle >> 6 | bottle<<2;
-        rotatedmask=rotatedmask>>6 | rotatedmask<<2;
-        rotatedirr=bottle;
+        rotatedmaskedirr2=rotatedmaskedirr2&32;
+
        end
-       if(inservicemask[6]==1) begin 
+       if(rotatedmaskedirr2[6]==1) begin 
         interrupt=64; 
-        inservicemask=inservicemask&64;
-        bottle=bottle >> 7 | bottle<<1;
-        rotatedmask=rotatedmask>>7 | rotatedmask<<1;
-        rotatedirr=bottle;
+        rotatedmaskedirr2=rotatedmaskedirr2&64;
+
        end
-       if(inservicemask[7]==1) begin 
+       if(rotatedmaskedirr2[7]==1) begin 
         interrupt=128; 
-        inservicemask=inservicemask&128;
-        bottle=bottle;
-        rotatedmask=rotatedmask;
-        rotatedirr=bottle;
+        rotatedmaskedirr2=rotatedmaskedirr2&128;
        end
-        
-        
+        if(rotatedmaskedirr2==0)
+          begin
+            interrupt=0;
+          end
       end
     end    
   end
- always@(*)
-  begin
-    if(mode==1)
-    inservicemask=rotatedirr;
-    interrupt=rotatedirr;
-  end
+
 
 endmodule
