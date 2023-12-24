@@ -3,7 +3,6 @@
 // implements the data bus buffering and read/write control logic for the 8259A PIC
 
 module Bus_Control_Logic (
-    input   logic           clock,
     input   logic           reset,
 
     input   logic           CS, //chip select active low
