@@ -17,7 +17,7 @@ module PriorityResolver (
  reg	[7:0] rotatedirr;
  reg	[7:0] rotatedmaskedirr;
   reg	[7:0] rotatedmaskedirr2;
- 
+  reg [2:0] rotationvalue; 
 
  always@(*)
   begin
@@ -37,48 +37,56 @@ module PriorityResolver (
          rotatedirr=(interrupt_request_register>>1) | (interrupt_request_register<<7);
         rotatedmaskedirr= (interrupt_mask >> 1) | (interrupt_mask<<7);
         rotatedmaskedirr=rotatedirr&~rotatedmaskedirr;
+         rotationvalue=1;
        end
          if(highest_level_in_service[1]==1)
        begin
          rotatedirr=(interrupt_request_register>>2) | (interrupt_request_register<<6);
          rotatedmaskedirr= (interrupt_mask >> 2) | (interrupt_mask<<6);
         rotatedmaskedirr=rotatedirr&~rotatedmaskedirr;
+         rotationvalue=2;
        end
          if(highest_level_in_service[2]==1)
        begin
          rotatedirr=(interrupt_request_register>>3) | (interrupt_request_register<<5);
          rotatedmaskedirr= (interrupt_mask >> 3) | (interrupt_mask<<5);
         rotatedmaskedirr=rotatedirr&~rotatedmaskedirr;
+         rotationvalue=3;
        end
          if(highest_level_in_service[3]==1)
        begin
          rotatedirr=(interrupt_request_register>>4) | (interrupt_request_register<<4);
          rotatedmaskedirr= (interrupt_mask >> 4) | (interrupt_mask<<4);
         rotatedmaskedirr=rotatedirr&~rotatedmaskedirr;
+         rotationvalue=4;
        end
          if(highest_level_in_service[4]==1)
        begin
          rotatedirr=(interrupt_request_register>>5) | (interrupt_request_register<<3);
          rotatedmaskedirr= (interrupt_mask >> 5) | (interrupt_mask<<3);
         rotatedmaskedirr=rotatedirr&~rotatedmaskedirr;
+         rotationvalue=5;
        end
          if(highest_level_in_service[5]==1)
        begin
          rotatedirr=(interrupt_request_register>>6) | (interrupt_request_register<<2);
          rotatedmaskedirr= (interrupt_mask >> 6) | (interrupt_mask<<2);
         rotatedmaskedirr=rotatedirr&~rotatedmaskedirr;
+         rotationvalue=6;
        end
          if(highest_level_in_service[6]==1)
        begin
          rotatedirr=(interrupt_request_register>>7) | (interrupt_request_register<<1);
         rotatedmaskedirr= (interrupt_mask >> 1) | (interrupt_mask<<7);
         rotatedmaskedirr=rotatedirr&~rotatedmaskedirr;
+         rotationvalue=7;
        end
          if(highest_level_in_service[7]==1)
        begin
          rotatedirr=interrupt_request_register; 
         rotatedmaskedirr= interrupt_mask; 
         rotatedmaskedirr=rotatedirr&~rotatedmaskedirr;
+         rotationvalue=0;
        end
      if(highest_level_in_service==0)
        begin
@@ -128,10 +136,7 @@ module PriorityResolver (
        if(inservicemask[7]==1) begin 
         interrupt=128; 
         inservicemask=inservicemask&128;
-       end 
-       if(inservicemask==0)begin
-       interrupt=0;
-       end  
+       end     
         
       end
     end
@@ -147,41 +152,41 @@ module PriorityResolver (
      if(mode==1)
       begin
        if(rotatedmaskedirr2[0]==1) begin 
-        interrupt=1; 
+         interrupt= (1<<rotationvalue) |(1>>(8-rotationvalue)) ; 
         rotatedmaskedirr2=rotatedmaskedirr2&1;
    
        end
        if(rotatedmaskedirr2[1]==1) begin 
-        interrupt=2; 
+         interrupt= (2<<rotationvalue) |(2>>(8-rotationvalue)) ; 
         rotatedmaskedirr2=rotatedmaskedirr2&2;
        end
        if(rotatedmaskedirr2[2]==1) begin 
-          interrupt=4; 
+         interrupt= (4<<rotationvalue) |(4>>(8-rotationvalue)) ; 
         rotatedmaskedirr2=rotatedmaskedirr2&4;      
          
        end
        if(rotatedmaskedirr2[3]==1) begin 
-        interrupt=8; 
+         interrupt= (8<<rotationvalue) |(8>>(8-rotationvalue)) ; 
         rotatedmaskedirr2=rotatedmaskedirr2&8;
 
        end
        if(rotatedmaskedirr2[4]==1) begin 
-        interrupt=16; 
+        interrupt= (16<<rotationvalue) |(16>>(8-rotationvalue)) ; 
         rotatedmaskedirr2=rotatedmaskedirr2&16;
 
        end
        if(rotatedmaskedirr2[5]==1) begin 
-        interrupt=32; 
+         interrupt= (32<<rotationvalue) |(32>>(8-rotationvalue)) ; 
         rotatedmaskedirr2=rotatedmaskedirr2&32;
 
        end
        if(rotatedmaskedirr2[6]==1) begin 
-        interrupt=64; 
+         interrupt= (64<<rotationvalue) |(64>>(8-rotationvalue)) ; 
         rotatedmaskedirr2=rotatedmaskedirr2&64;
 
        end
        if(rotatedmaskedirr2[7]==1) begin 
-        interrupt=128; 
+         interrupt= (128<<rotationvalue) |(128>>(8-rotationvalue)) ; 
         rotatedmaskedirr2=rotatedmaskedirr2&128;
        end
         if(rotatedmaskedirr2==0)
