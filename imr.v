@@ -13,3 +13,4 @@ module IMRModule (
   assign IMR_output = imr_register;
 
 endmodule
+/*we can add modes as special mask */
