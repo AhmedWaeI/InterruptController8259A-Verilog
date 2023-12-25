@@ -136,7 +136,10 @@ module PriorityResolver (
        if(inservicemask[7]==1) begin 
         interrupt=128; 
         inservicemask=inservicemask&128;
-       end     
+       end
+				if(inservicemask==0)begin
+					interrupt=0;
+				end     
         
       end
     end
