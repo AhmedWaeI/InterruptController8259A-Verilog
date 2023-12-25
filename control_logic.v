@@ -26,7 +26,7 @@ module Control_Logic (
 
 	output	reg	[7:0]			end_of_interrupt,
 	output	reg	[2:0]			priority_rotate,
-	
+	output  wire                            freeze, //freeze for irr when 1st ack pulse
 	output	reg					latch_in_service,
 	output	reg	[7:0]			clear_interrupt_request
 	);
@@ -59,7 +59,7 @@ module Control_Logic (
 	wire write_operation_control_word_2_registers = (command_state == 8'd0) & write_operation_control_word_2;
 	wire write_operation_control_word_3_registers = (command_state == 8'd0) & write_operation_control_word_3;
     end
-	reg [7:0] control_state;*/
+	reg [7:0] control_state;
 	/*reg prev_interrupt_acknowledge_n;
 	always @(*)
 	
