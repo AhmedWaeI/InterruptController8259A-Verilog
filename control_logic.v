@@ -182,20 +182,7 @@ module Control_Logic (
 		
      end		
 //------------------------------------------------------------------	
-	function [7:0] KF8259_Common_Package_num2bit; //wael
-		input [2:0] source;
-		casez (source)
-			3'b000: KF8259_Common_Package_num2bit = 8'b00000001;
-			3'b001: KF8259_Common_Package_num2bit = 8'b00000010;
-			3'b010: KF8259_Common_Package_num2bit = 8'b00000100;
-			3'b011: KF8259_Common_Package_num2bit = 8'b00001000;
-			3'b100: KF8259_Common_Package_num2bit = 8'b00010000;
-			3'b101: KF8259_Common_Package_num2bit = 8'b00100000;
-			3'b110: KF8259_Common_Package_num2bit = 8'b01000000;
-			3'b111: KF8259_Common_Package_num2bit = 8'b10000000;
-			default: KF8259_Common_Package_num2bit = 8'b00000000;
-		endcase
-	endfunction
+	
 	always @(*) //priority 
 		if ((auto_eoi_config == 1'b1) && (end_of_acknowledge_sequence == 1'b1))
 			end_of_interrupt = acknowledge_interrupt;
