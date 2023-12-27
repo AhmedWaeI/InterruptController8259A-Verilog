@@ -38,7 +38,7 @@ module Control_Logic_2 (
   reg [7:0] cascade_device_config;
   reg buffered_mode_config;
   reg buffered_master_or_slave_config;
-  reg auto_eoi_config
+  reg auto_eoi_config;
   reg auto_rotate_mode;
   reg [7:0] acknowledge_interrupt;
   reg cascade_slave;
