@@ -1,3 +1,4 @@
+// Code your design here
 module PriorityResolver (
  // Inputs from control logic
  input   mode,
@@ -90,7 +91,8 @@ module PriorityResolver (
        end
      if(highest_level_in_service==0)
        begin
-         rotatedmaskedirr=masked_interrupt_request; 
+         rotatedmaskedirr=masked_interrupt_request;
+         rotationvalue=0;
        end
    end
   always@(*)
@@ -137,9 +139,10 @@ module PriorityResolver (
         interrupt=128; 
         inservicemask=inservicemask&128;
        end
-				if(inservicemask==0)begin
-					interrupt=0;
-				end     
+        if(inservicemask==0)
+          begin
+            interrupt=0;
+          end
         
       end
     end
