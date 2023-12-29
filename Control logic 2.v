@@ -333,7 +333,7 @@ module Control_Logic_2 (
       interrupt_when_ack1 <= interrupt_when_ack1;
   always @(*)
     if (interrupt_acknowledge_n == 1'b0)
-      casez (control_state)
+      case (control_state)
         32'd0:
           if (cascade_slave == 1'b0) begin
             if (u8086_or_mcs80_config == 1'b0) begin
