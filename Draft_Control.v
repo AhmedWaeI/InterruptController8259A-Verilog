@@ -42,7 +42,7 @@ module KF8259_Control_Logic (
 	reg buffered_mode_config;
 	reg buffered_master_or_slave_config;
 	reg auto_eoi_config;
-	reg u8086_or_mcs80_config;
+	//reg u8086_or_mcs80_config;
 	reg special_mask_mode;
 	reg enable_special_mask_mode;
 	reg auto_rotate_mode;
@@ -113,8 +113,6 @@ module KF8259_Control_Logic (
 			32'd2:
 				if (pedge_interrupt_acknowledge == 1'b0)
 					next_control_state = 32'd2;
-				else if (u8086_or_mcs80_config == 1'b0)
-					next_control_state = 32'd3;
 				else
 					next_control_state = 32'd0;
 			32'd3:
@@ -310,14 +308,19 @@ module KF8259_Control_Logic (
 			cascade_out <= 3'b000;
 		else if (interrupt_from_slave_device == 1'b0)
 			cascade_out <= 3'b000;
-		else
-			cascade_out <= KF8259_Common_Package_bit2num(acknowledge_interrupt);
+		else 
+			if(acknowledge_interrupt[0]==1'b1) priority_rotate <=3'b000;
+		        else if(acknowledge_interrupt[1]==1'b1) cascade_out <=3'b001;
+		        else if(acknowledge_interrupt[2]==1'b1) cascade_out <=3'b010;
+		        else if(acknowledge_interrupt[3]==1'b1) cascade_out <=3'b011;
+		        else if(acknowledge_interrupt[4]==1'b1) cascade_out <=3'b100;
+		        else if(acknowledge_interrupt[5]==1'b1) cascade_out <=3'b101;
+		        else if(acknowledge_interrupt[6]==1'b1) cascade_out <=3'b110;
+		        else if(acknowledge_interrupt[7]==1'b1) cascade_out <=3'b111;
 
-  
-	always @(posedge clock or posedge reset)
-		if (reset)
-			interrupt_to_cpu <= 1'b0;
-		else if (interrupt != 8'b00000000)
+	
+	always @(*)
+		if (interrupt != 8'b00000000)
 			interrupt_to_cpu <= 1'b1;
 		else if (end_of_acknowledge_sequence == 1'b1)
 			interrupt_to_cpu <= 1'b0;
@@ -325,10 +328,10 @@ module KF8259_Control_Logic (
 			interrupt_to_cpu <= 1'b0;
 		else
 			interrupt_to_cpu <= interrupt_to_cpu;
-	always @(posedge clock or posedge reset)
-		if (reset)
-			freeze <= 1'b1;
-		else if (next_control_state == 32'd0)
+
+	
+	always @(*)
+		if (next_control_state == 32'd0)
 			freeze <= 1'b0;
 		else
 			freeze <= 1'b1;
@@ -341,7 +344,9 @@ module KF8259_Control_Logic (
 			clear_interrupt_request = 8'b00000000;
 		else
 			clear_interrupt_request = interrupt;
-	always @(posedge clock or posedge reset)
+
+	
+	always @(*)
 		if (reset)
 			acknowledge_interrupt <= 8'b00000000;
 		else if (end_of_acknowledge_sequence)
@@ -352,17 +357,19 @@ module KF8259_Control_Logic (
 			acknowledge_interrupt <= interrupt;
 		else
 			acknowledge_interrupt <= acknowledge_interrupt;
+
+	
 	reg [7:0] interrupt_when_ack1;
-	always @(posedge clock or posedge reset)
-		if (reset)
-			interrupt_when_ack1 <= 8'b00000000;
-		else if (control_state == 32'd1)
+	always @(*)
+		if (control_state == 32'd1)
 			interrupt_when_ack1 <= interrupt;
 		else
 			interrupt_when_ack1 <= interrupt_when_ack1;
+
+	
 	always @(*)
 		if (interrupt_acknowledge_n == 1'b0)
-			casez (control_state)
+			case (control_state)
 				32'd0:
 					if (cascade_slave == 1'b0) begin
 						if (u8086_or_mcs80_config == 1'b0) begin
