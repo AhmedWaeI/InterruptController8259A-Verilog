@@ -1,35 +1,32 @@
 module Control_Logic (
-	input		wire					clock,
-	input		wire					reset,
-	input		wire	[2:0]			cascade_in,
-	output	reg	[2:0]			cascade_out,
-	output	wire					cascade_io,
-	input		wire					slave_program_n,
-	output	wire					slave_program_or_enable_buffer,
-	input		wire					interrupt_acknowledge_n,
-	output	reg					interrupt_to_cpu,
-	input		wire	[7:0]			internal_data_bus,
-	input		wire					write_initial_command_word_1,
-	input		wire					write_initial_command_word_2_4,
-	input		wire					write_operation_control_word_1,
-	input		wire					write_operation_control_word_2,
-	input		wire					write_operation_control_word_3,
-	input		wire					read,
-	output	reg					out_control_logic_data,
-	output	reg	[7:0]			control_logic_data,
-	output	reg					level_or_edge_toriggered_config,
-	//output	reg					special_fully_nest_config,
-	output	reg					enable_read_register,
-	output	reg					read_register_isr_or_irr,
-	input		wire	[7:0]			interrupt,
-	input		wire	[7:0]			highest_level_in_service,
-	output	reg	[7:0]			interrupt_mask,
-	//output	reg	[7:0]			interrupt_special_mask,
-	output	reg	[7:0]			end_of_interrupt,
-	output	reg	[2:0]			priority_rotate,
-	output	reg					freeze,
-	output	reg					latch_in_service,
-	output	reg	[7:0]			clear_interrupt_request
+	
+	input wire [2:0] cascade_in,
+	output reg [2:0] cascade_out,
+	output wire cascade_io,
+	input wire slave_program_n,
+	output wire slave_program_or_enable_buffer,
+	input wire interrupt_acknowledge_n,
+	output reg interrupt_to_cpu,
+	input wire [7:0] internal_data_bus,
+	input wire write_initial_command_word_1,
+	input wire write_initial_command_word_2_4,
+	input wire write_operation_control_word_1,
+	input wire write_operation_control_word_2,
+	input wire write_operation_control_word_3,
+	input wire read,
+	output reg out_control_logic_data,
+	output reg [7:0] control_logic_data,
+	output reg level_or_edge_toriggered_config,
+	output reg enable_read_register,
+	output reg read_register_isr_or_irr,
+	input wire [7:0] interrupt,
+	input wire [7:0] highest_level_in_service,
+	output reg [7:0] interrupt_mask,
+	output reg [7:0] end_of_interrupt,
+	output reg [2:0] priority_rotate,
+	output reg freeze,
+	output reg latch_in_service,
+	output reg [7:0] clear_interrupt_request
 	);
 
 	reg [10:0] interrupt_vector_address;
@@ -40,7 +37,6 @@ module Control_Logic (
 	reg buffered_mode_config;
 	reg buffered_master_or_slave_config;
 	reg auto_eoi_config;
-	//reg u8086_or_mcs80_config;
 	reg special_mask_mode;
 	reg enable_special_mask_mode;
 	reg auto_rotate_mode;
@@ -77,8 +73,8 @@ module Control_Logic (
   
 
 	wire write_initial_command_word_2 = (command_state == 32'd1) & write_initial_command_word_2;
-  wire write_initial_command_word_3 = (command_state == 32'd2) & write_initial_command_word_3;
-  wire write_initial_command_word_4 = (command_state == 32'd3) & write_initial_command_word_4;
+	wire write_initial_command_word_3 = (command_state == 32'd2) & write_initial_command_word_3;
+	wire write_initial_command_word_4 = (command_state == 32'd3) & write_initial_command_word_4;
 	wire write_operation_control_word_1_registers = (command_state == 32'd0) & write_operation_control_word_1;
 	wire write_operation_control_word_2_registers = (command_state == 32'd0) & write_operation_control_word_2;
 	wire write_operation_control_word_3_registers = (command_state == 32'd0) & write_operation_control_word_3;
