@@ -20,17 +20,10 @@ module PriorityResolver_TB;
 
  initial
    begin
-
+		 $dumpfile("dump.vcd");
+    $dumpvars;
     // Test case 2
      #100
-    mode = 1;
-  interrupt_mask = 8'b0000000;
-    highest_level_in_service = 8'b00000100;
-   interrupt_request_register = 8'b10010001;
-   in_service_register = 8'b00000000;
-    #10; // Allow some time for computation
-    $display("At time %t, interrupt (Case 2) = %b", $time, interrupt);
-       #100
     mode = 1;
   interrupt_mask = 8'b0000000;
     highest_level_in_service = 8'b00000001;
@@ -38,6 +31,45 @@ module PriorityResolver_TB;
    in_service_register = 8'b00000000;
     #10; // Allow some time for computation
     $display("At time %t, interrupt (Case 2) = %b", $time, interrupt);
+       #100
+    mode = 1;
+  interrupt_mask = 8'b0000000;
+    highest_level_in_service = 8'b00010000;
+   interrupt_request_register = 8'b10010001;
+   in_service_register = 8'b00000000;
+    #10; // Allow some time for computation
+    $display("At time %t, interrupt (Case 2) = %b", $time, interrupt);
+     #100
+     mode = 1;
+  interrupt_mask = 8'b0000000;
+    highest_level_in_service = 8'b10000000;
+   interrupt_request_register = 8'b10010010;
+   in_service_register = 8'b00000000;
+    #100; // Allow some time for computation
+    $display("At time %t, interrupt (Case 2) = %b", $time, interrupt);
+      mode = 1;
+  interrupt_mask = 8'b0000000;
+    highest_level_in_service = 8'b10000000;
+   interrupt_request_register = 8'b10010110;
+   in_service_register = 8'b00000000;
+    #100; // Allow some time for computation
+    $display("At time %t, interrupt (Case 2) = %b", $time, interrupt);
+      mode = 1;
+  interrupt_mask = 8'b0000000;
+    highest_level_in_service = 8'b00000010;
+   interrupt_request_register = 8'b10011010;
+   in_service_register = 8'b00000000;
+    #100; // Allow some time for computation
+    $display("At time %t, interrupt (Case 2) = %b", $time, interrupt);
+     mode = 1;
+  interrupt_mask = 8'b0000000;
+    highest_level_in_service = 8'b00000010;
+   interrupt_request_register = 8'b10011010;
+   in_service_register = 8'b00000000;
+    #100; // Allow some time for computation
+    $display("At time %t, interrupt (Case 2) = %b", $time, interrupt);
+
+     
      
   end
 
