@@ -80,9 +80,9 @@ module Control_Logic (
 	wire write_initial_command_word_2 = (command_state == 32'd1) & write_initial_command_word_2;
 	wire write_initial_command_word_3 = (command_state == 32'd2) & write_initial_command_word_3;
 	wire write_initial_command_word_4 = (command_state == 32'd3) & write_initial_command_word_4;
-	wire write_operation_control_word_1_registers = (command_state == 32'd0) & write_operation_control_word_1;
-	wire write_operation_control_word_2_registers = (command_state == 32'd0) & write_operation_control_word_2;
-	wire write_operation_control_word_3_registers = (command_state == 32'd0) & write_operation_control_word_3;
+	wire write_operation_control_word_1_registers = (command_state == 32'd0) & OCW_1;
+	wire write_operation_control_word_2_registers = (command_state == 32'd0) & OCW_2;
+	wire write_operation_control_word_3_registers = (command_state == 32'd0) & OCW_3;
   
 	reg [31:0] next_control_state;
 	reg [31:0] control_state;
