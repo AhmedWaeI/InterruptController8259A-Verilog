@@ -1,19 +1,24 @@
 module Control_Logic (
-	
-	input wire [2:0] cascade_in,
-	output reg [2:0] cascade_out,
-	output wire cascade_io,
+	//-------from data bus buffer----------------------
+	input wire [7:0] internal_data_bus,
+	//-------from read/write control logic -------------------------
+	input wire ICW_1,
+	input wire ICW_2_4,
+	input wire OCW_1,
+	input wire OCW_2,
+	input wire OCW_3,
+	input wire read,
+	//---------related to cascade buffer/comparator-----------
+	input wire [2:0] casc_in,
+	output reg [2:0] casc_out,
+	output wire casc_io,
+	//--------related to master-slave mode-----------------------
 	input wire slave_program_n,
 	output wire slave_program_or_enable_buffer,
+	//----------INT&INTA---------------------------
 	input wire interrupt_acknowledge_n,
 	output reg interrupt_to_cpu,
-	input wire [7:0] internal_data_bus,
-	input wire write_initial_command_word_1,
-	input wire write_initial_command_word_2_4,
-	input wire write_operation_control_word_1,
-	input wire write_operation_control_word_2,
-	input wire write_operation_control_word_3,
-	input wire read,
+	//----------related to control logic------------------
 	output reg out_control_logic_data,
 	output reg [7:0] control_logic_data,
 	output reg level_or_edge_toriggered_config,
@@ -48,9 +53,9 @@ module Control_Logic (
 	reg [31:0] next_command_state;
   
   always @(*) begin
-		if (write_initial_command_word_1 == 1'b1)
+    if (ICW_1 == 1'b1)
 			next_command_state = 32'd1;
-		else if (write_initial_command_word_2_4 == 1'b1)
+    else if (ICW_2_4 == 1'b1)
 			case (command_state)
 				32'd1:
 					if (single_or_cascade_config == 1'b0)
@@ -75,9 +80,9 @@ module Control_Logic (
 	wire write_initial_command_word_2 = (command_state == 32'd1) & write_initial_command_word_2;
 	wire write_initial_command_word_3 = (command_state == 32'd2) & write_initial_command_word_3;
 	wire write_initial_command_word_4 = (command_state == 32'd3) & write_initial_command_word_4;
-	wire write_operation_control_word_1_registers = (command_state == 32'd0) & write_operation_control_word_1;
-	wire write_operation_control_word_2_registers = (command_state == 32'd0) & write_operation_control_word_2;
-	wire write_operation_control_word_3_registers = (command_state == 32'd0) & write_operation_control_word_3;
+	wire write_operation_control_word_1_registers = (command_state == 32'd0) & OCW_1;
+	wire write_operation_control_word_2_registers = (command_state == 32'd0) & OCW_2;
+	wire write_operation_control_word_3_registers = (command_state == 32'd0) & OCW_3;
   
 	reg [31:0] next_control_state;
 	reg [31:0] control_state;
@@ -146,7 +151,7 @@ module Control_Logic (
   
   always @(*)
     begin
-		if (write_initial_command_word_1 == 1'b1)
+      if (ICW_1 == 1'b1)
 			interrupt_vector_address[2:0] <= internal_data_bus[7:5];
 		else
 			interrupt_vector_address[2:0] <= interrupt_vector_address[2:0];
@@ -155,7 +160,7 @@ module Control_Logic (
   
   always @(*)
     begin
-		if (write_initial_command_word_1 == 1'b1)
+      if (ICW_1 == 1'b1)
 			level_or_edge_toriggered_config <= internal_data_bus[3];
 		else
 			level_or_edge_toriggered_config <= level_or_edge_toriggered_config;
@@ -163,21 +168,21 @@ module Control_Logic (
   
   always @(*)
     begin
-		if (write_initial_command_word_1 == 1'b1)
+      if (ICW_1 == 1'b1)
 			call_address_interval_4_or_8_config <= internal_data_bus[2];
 		else
 			call_address_interval_4_or_8_config <= call_address_interval_4_or_8_config;
     end
   always @(*)
     begin
-		if (write_initial_command_word_1 == 1'b1)
+      if (ICW_1 == 1'b1)
 			single_or_cascade_config <= internal_data_bus[1];
 		else
 			single_or_cascade_config <= single_or_cascade_config;
     end
   always @(*)
     begin
-		if (write_initial_command_word_1 == 1'b1)
+      if (ICW_1 == 1'b1)
 			set_icw4_config <= internal_data_bus[0];
 		else
 			set_icw4_config <= set_icw4_config;
@@ -226,7 +231,7 @@ module Control_Logic (
       begin
 		if ((auto_eoi_config == 1'b1) && (end_of_acknowledge_sequence == 1'b1))
 			end_of_interrupt = acknowledge_interrupt;
-  else if (write_operation_control_word_2 == 1'b1) begin
+	      else if (OCW_2 == 1'b1) begin
 			case(internal_data_bus[6:5])
 				2'b01: end_of_interrupt = highest_level_in_service;
         2'b11:if(internal_data_bus[2:0]==3'b000) end_of_interrupt= 8'b00000001;
@@ -245,7 +250,7 @@ module Control_Logic (
   
   always @(*)
     begin
-		if (write_operation_control_word_2 == 1'b1)
+	    if (OCW_2 == 1'b1)
 			case (internal_data_bus[7:5])
 				3'b000: auto_rotate_mode <= 1'b0;
 				3'b100: auto_rotate_mode <= 1'b1;
@@ -257,9 +262,17 @@ module Control_Logic (
     end
   always @(*)
     begin
-		if ((auto_rotate_mode == 1'b1) && (end_of_acknowledge_sequence == 1'b1))
-			priority_rotate <= KF8259_Common_Package_bit2num(acknowledge_interrupt);
-		else if (write_operation_control_word_2 == 1'b1)
+      if ((auto_rotate_mode == 1'b1) && (end_of_acknowledge_sequence == 1'b1)) begin
+        	if(acknowledge_interrupt[0]==1'b1) priority_rotate <=3'b000;
+		    else if(acknowledge_interrupt[1]==1'b1) priority_rotate <=3'b001;
+		    else if(acknowledge_interrupt[2]==1'b1) priority_rotate <=3'b010;
+		    else if(acknowledge_interrupt[3]==1'b1) priority_rotate <=3'b011;
+		    else if(acknowledge_interrupt[4]==1'b1) priority_rotate <=3'b100;
+		    else if(acknowledge_interrupt[5]==1'b1) priority_rotate <=3'b101;
+		    else if(acknowledge_interrupt[6]==1'b1) priority_rotate <=3'b110;
+		    else if(acknowledge_interrupt[7]==1'b1) priority_rotate <=3'b111;
+      end
+	    else if (OCW_2 == 1'b1)
 			case (internal_data_bus[7:5])
 		        3'b101:if(highest_level_in_service[0]==1'b1) priority_rotate <=3'b000;
 		        else if(highest_level_in_service[1]==1'b1) priority_rotate <=3'b001;
@@ -297,14 +310,14 @@ module Control_Logic (
 		else
 			cascade_slave = ~buffered_master_or_slave_config;
       end
-	assign cascade_io = cascade_slave;
+	assign casc_io = cascade_slave;
 
   
 	always @(*)
       begin
 		if (cascade_slave == 1'b0)
 			cascade_slave_enable = 1'b0;
-		else if (cascade_device_config[2:0] != cascade_in)
+		else if (cascade_device_config[2:0] != casc_in)
 			cascade_slave_enable = 1'b0;
 		else
 			cascade_slave_enable = 1'b1;
@@ -328,20 +341,20 @@ module Control_Logic (
 	always @(*)
       begin
 		if (cascade_slave == 1'b1)
-			cascade_out <= 3'b000;
+			casc_out <= 3'b000;
 		else if (((control_state != 32'd1) && (control_state != 32'd2)) && (control_state != 32'd3))
-			cascade_out <= 3'b000;
+			casc_out <= 3'b000;
 		else if (interrupt_from_slave_device == 1'b0)
-			cascade_out <= 3'b000;
+			casc_out <= 3'b000;
 		else 
 			if(acknowledge_interrupt[0]==1'b1) priority_rotate <=3'b000;
-		        else if(acknowledge_interrupt[1]==1'b1) cascade_out <=3'b001;
-		        else if(acknowledge_interrupt[2]==1'b1) cascade_out <=3'b010;
-		        else if(acknowledge_interrupt[3]==1'b1) cascade_out <=3'b011;
-		        else if(acknowledge_interrupt[4]==1'b1) cascade_out <=3'b100;
-		        else if(acknowledge_interrupt[5]==1'b1) cascade_out <=3'b101;
-		        else if(acknowledge_interrupt[6]==1'b1) cascade_out <=3'b110;
-		        else if(acknowledge_interrupt[7]==1'b1) cascade_out <=3'b111;
+		        else if(acknowledge_interrupt[1]==1'b1) casc_out <=3'b001;
+		        else if(acknowledge_interrupt[2]==1'b1) casc_out <=3'b010;
+		        else if(acknowledge_interrupt[3]==1'b1) casc_out <=3'b011;
+		        else if(acknowledge_interrupt[4]==1'b1) casc_out <=3'b100;
+		        else if(acknowledge_interrupt[5]==1'b1) casc_out <=3'b101;
+		        else if(acknowledge_interrupt[6]==1'b1) casc_out <=3'b110;
+		        else if(acknowledge_interrupt[7]==1'b1) casc_out <=3'b111;
       end
 	
 	always @(*)
@@ -366,7 +379,7 @@ module Control_Logic (
   
 	always @(*)
       begin
-		if (write_initial_command_word_1 == 1'b1)
+        if (ICW_1 == 1'b1)
 			clear_interrupt_request = 8'b11111111;
 		else if (latch_in_service == 1'b0)
 			clear_interrupt_request = 8'b00000000;
