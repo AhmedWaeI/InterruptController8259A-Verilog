@@ -2,11 +2,11 @@ module Control_Logic (
 	//-------from data bus buffer----------------------
 	input wire [7:0] internal_data_bus,
 	//-------from read/write control logic -------------------------
-	input wire write_initial_command_word_1,
-	input wire write_initial_command_word_2_4,
-	input wire write_operation_control_word_1,
-	input wire write_operation_control_word_2,
-	input wire write_operation_control_word_3,
+	input wire ICW_1,
+	input wire ICW_2_4,
+	input wire OCW_1,
+	input wire OCW_2,
+	input wire OCW_3,
 	input wire read,
 	//---------related to cascade buffer/comparator-----------
 	input wire [2:0] casc_in,
@@ -53,9 +53,9 @@ module Control_Logic (
 	reg [31:0] next_command_state;
   
   always @(*) begin
-		if (write_initial_command_word_1 == 1'b1)
+    if (ICW_1 == 1'b1)
 			next_command_state = 32'd1;
-		else if (write_initial_command_word_2_4 == 1'b1)
+    else if (ICW_2_4 == 1'b1)
 			case (command_state)
 				32'd1:
 					if (single_or_cascade_config == 1'b0)
@@ -151,7 +151,7 @@ module Control_Logic (
   
   always @(*)
     begin
-		if (write_initial_command_word_1 == 1'b1)
+      if (ICW_1 == 1'b1)
 			interrupt_vector_address[2:0] <= internal_data_bus[7:5];
 		else
 			interrupt_vector_address[2:0] <= interrupt_vector_address[2:0];
@@ -160,7 +160,7 @@ module Control_Logic (
   
   always @(*)
     begin
-		if (write_initial_command_word_1 == 1'b1)
+      if (ICW_1 == 1'b1)
 			level_or_edge_toriggered_config <= internal_data_bus[3];
 		else
 			level_or_edge_toriggered_config <= level_or_edge_toriggered_config;
@@ -168,21 +168,21 @@ module Control_Logic (
   
   always @(*)
     begin
-		if (write_initial_command_word_1 == 1'b1)
+      if (ICW_1 == 1'b1)
 			call_address_interval_4_or_8_config <= internal_data_bus[2];
 		else
 			call_address_interval_4_or_8_config <= call_address_interval_4_or_8_config;
     end
   always @(*)
     begin
-		if (write_initial_command_word_1 == 1'b1)
+      if (ICW_1 == 1'b1)
 			single_or_cascade_config <= internal_data_bus[1];
 		else
 			single_or_cascade_config <= single_or_cascade_config;
     end
   always @(*)
     begin
-		if (write_initial_command_word_1 == 1'b1)
+      if (ICW_1 == 1'b1)
 			set_icw4_config <= internal_data_bus[0];
 		else
 			set_icw4_config <= set_icw4_config;
@@ -379,7 +379,7 @@ module Control_Logic (
   
 	always @(*)
       begin
-		if (write_initial_command_word_1 == 1'b1)
+        if (ICW_1 == 1'b1)
 			clear_interrupt_request = 8'b11111111;
 		else if (latch_in_service == 1'b0)
 			clear_interrupt_request = 8'b00000000;
