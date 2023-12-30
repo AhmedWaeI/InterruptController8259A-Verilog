@@ -1,6 +1,4 @@
-`default_nettype none
-
-module KF8259_Control_Logic (
+Control_Logic (
 	input		wire					clock,
 	input		wire					reset,
 	input		wire	[2:0]			cascade_in,
