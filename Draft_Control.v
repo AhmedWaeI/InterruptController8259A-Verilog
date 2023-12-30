@@ -242,14 +242,14 @@ Control_Logic (
 			priority_rotate <= KF8259_Common_Package_bit2num(acknowledge_interrupt);
 		else if (write_operation_control_word_2 == 1'b1)
 			case (internal_data_bus[7:5])
-        3'b101:if(highest_level_in_service[0]==1'b1) priority_rotate <=3'b000;
-        else if(highest_level_in_service[1]==1'b1) priority_rotate <=3'b001;
-        else if(highest_level_in_service[2]==1'b1) priority_rotate <=3'b010;
-        else if(highest_level_in_service[3]==1'b1) priority_rotate <=3'b011;
-        else if(highest_level_in_service[4]==1'b1) priority_rotate <=3'b100;
-        else if(highest_level_in_service[5]==1'b1) priority_rotate <=3'b101;
-        else if(highest_level_in_service[6]==1'b1) priority_rotate <=3'b110;
-        else if(highest_level_in_service[7]==1'b1) priority_rotate <=3'b111;
+		        3'b101:if(highest_level_in_service[0]==1'b1) priority_rotate <=3'b000;
+		        else if(highest_level_in_service[1]==1'b1) priority_rotate <=3'b001;
+		        else if(highest_level_in_service[2]==1'b1) priority_rotate <=3'b010;
+		        else if(highest_level_in_service[3]==1'b1) priority_rotate <=3'b011;
+		        else if(highest_level_in_service[4]==1'b1) priority_rotate <=3'b100;
+		        else if(highest_level_in_service[5]==1'b1) priority_rotate <=3'b101;
+		        else if(highest_level_in_service[6]==1'b1) priority_rotate <=3'b110;
+		        else if(highest_level_in_service[7]==1'b1) priority_rotate <=3'b111;
 				3'b11z: priority_rotate <= internal_data_bus[2:0];
 				default: priority_rotate <= priority_rotate;
 			endcase
