@@ -231,7 +231,7 @@ module Control_Logic (
       begin
 		if ((auto_eoi_config == 1'b1) && (end_of_acknowledge_sequence == 1'b1))
 			end_of_interrupt = acknowledge_interrupt;
-  else if (write_operation_control_word_2 == 1'b1) begin
+	      else if (OCW_2 == 1'b1) begin
 			case(internal_data_bus[6:5])
 				2'b01: end_of_interrupt = highest_level_in_service;
         2'b11:if(internal_data_bus[2:0]==3'b000) end_of_interrupt= 8'b00000001;
