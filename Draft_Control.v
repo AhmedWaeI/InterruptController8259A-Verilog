@@ -1,19 +1,24 @@
 module Control_Logic (
-	
-	input wire [2:0] casc_in,
-	output reg [2:0] casc_out,
-	output wire casc_io,
-	input wire slave_program_n,
-	output wire slave_program_or_enable_buffer,
-	input wire interrupt_acknowledge_n,
-	output reg interrupt_to_cpu,
+	//-------from data bus buffer----------------------
 	input wire [7:0] internal_data_bus,
+	//-------from read/write control logic -------------------------
 	input wire write_initial_command_word_1,
 	input wire write_initial_command_word_2_4,
 	input wire write_operation_control_word_1,
 	input wire write_operation_control_word_2,
 	input wire write_operation_control_word_3,
 	input wire read,
+	//---------related to cascade buffer/comparator-----------
+	input wire [2:0] casc_in,
+	output reg [2:0] casc_out,
+	output wire casc_io,
+	//--------related to master-slave mode-----------------------
+	input wire slave_program_n,
+	output wire slave_program_or_enable_buffer,
+	//----------INT&INTA---------------------------
+	input wire interrupt_acknowledge_n,
+	output reg interrupt_to_cpu,
+	//----------related to control logic------------------
 	output reg out_control_logic_data,
 	output reg [7:0] control_logic_data,
 	output reg level_or_edge_toriggered_config,
