@@ -250,7 +250,7 @@ module Control_Logic (
   
   always @(*)
     begin
-		if (write_operation_control_word_2 == 1'b1)
+	    if (OCW_2 == 1'b1)
 			case (internal_data_bus[7:5])
 				3'b000: auto_rotate_mode <= 1'b0;
 				3'b100: auto_rotate_mode <= 1'b1;
