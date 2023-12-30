@@ -402,17 +402,30 @@ Control_Logic (
 					if (cascade_output_ack_2_3 == 1'b1) begin
 						out_control_logic_data = 1'b1;
 						if (cascade_slave == 1'b1)
-							control_logic_data[2:0] = KF8259_Common_Package_bit2num(interrupt_when_ack1);
+							if(interrupt_when_ack1[0]==1'b1) control_logic_data[2:0]=3'b000;
+							else if(interrupt_when_ack1[1]==1'b1) control_logic_data[2:0]=3'b001;
+							else if(interrupt_when_ack1[2]==1'b1) control_logic_data[2:0]=3'b010;
+							else if(interrupt_when_ack1[3]==1'b1) control_logic_data[2:0]=3'b011;
+							else if(interrupt_when_ack1[4]==1'b1) control_logic_data[2:0]=3'b100;
+							else if(interrupt_when_ack1[5]==1'b1) control_logic_data[2:0]=3'b101;
+							else if(interrupt_when_ack1[6]==1'b1) control_logic_data[2:0]=3'b110;
+							else if(interrupt_when_ack1[7]==1'b1) control_logic_data[2:0]=3'b111;
 						else
-							control_logic_data[2:0] = KF8259_Common_Package_bit2num(acknowledge_interrupt);
-						if (u8086_or_mcs80_config == 1'b0) begin
+							if(acknowledge_interrupt[0]==1'b1) control_logic_data[2:0]=3'b000;
+							else if(acknowledge_interrupt[1]==1'b1) control_logic_data[2:0]=3'b001;
+							else if(acknowledge_interrupt[2]==1'b1) control_logic_data[2:0]=3'b010;
+							else if(acknowledge_interrupt[3]==1'b1) control_logic_data[2:0]=3'b011;
+							else if(acknowledge_interrupt[4]==1'b1) control_logic_data[2:0]=3'b100;
+							else if(acknowledge_interrupt[5]==1'b1) control_logic_data[2:0]=3'b101;
+							else if(acknowledge_interrupt[6]==1'b1) control_logic_data[2:0]=3'b110;
+							else if(acknowledge_interrupt[7]==1'b1) control_logic_data[2:0]=3'b111;
+							
+				
 							if (call_address_interval_4_or_8_config == 1'b0)
 								control_logic_data = {interrupt_vector_address[2:1], control_logic_data[2:0], 3'b000};
 							else
 								control_logic_data = {interrupt_vector_address[2:0], control_logic_data[2:0], 2'b00};
-						end
-						else
-							control_logic_data = {interrupt_vector_address[10:6], control_logic_data[2:0]};
+						
 					end
 					else begin
 						out_control_logic_data = 1'b0;
@@ -438,7 +451,14 @@ Control_Logic (
 				control_logic_data = 8'b00000000;
 			else begin
 				control_logic_data[7:3] = 5'b10000;
-				control_logic_data[2:0] = KF8259_Common_Package_bit2num(acknowledge_interrupt);
+				if(acknowledge_interrupt[0]==1'b1) control_logic_data[2:0]=3'b000;
+				else if(acknowledge_interrupt[1]==1'b1) control_logic_data[2:0]=3'b001;
+				else if(acknowledge_interrupt[2]==1'b1) control_logic_data[2:0]=3'b010;
+				else if(acknowledge_interrupt[3]==1'b1) control_logic_data[2:0]=3'b011;
+				else if(acknowledge_interrupt[4]==1'b1) control_logic_data[2:0]=3'b100;
+				else if(acknowledge_interrupt[5]==1'b1) control_logic_data[2:0]=3'b101;
+				else if(acknowledge_interrupt[6]==1'b1) control_logic_data[2:0]=3'b110;
+				else if(acknowledge_interrupt[7]==1'b1) control_logic_data[2:0]=3'b111;
 			end
 		end
 		else begin
