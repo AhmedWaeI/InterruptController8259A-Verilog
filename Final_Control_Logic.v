@@ -197,7 +197,7 @@ module Control_Logic (
 		else
 			cascade_device_config <= cascade_device_config;
     end
-  always @(*)//-------------might delete later-------------------
+  always @(*)
     begin
 	if (write_initial_command_word_4 == 1'b1)
 			buffered_mode_config <= internal_data_bus[3];
