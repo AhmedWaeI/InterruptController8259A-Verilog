@@ -1,4 +1,4 @@
-Control_Logic (
+module Control_Logic (
 	input		wire					clock,
 	input		wire					reset,
 	input		wire	[2:0]			cascade_in,
