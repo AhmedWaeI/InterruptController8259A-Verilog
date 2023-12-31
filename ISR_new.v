@@ -3,7 +3,7 @@ module ISR (
    input   wire   [2:0]   modes_of_end_of_interrupt, // comes from ocw2 D7-D5
    input   wire   [7:0]   interrupt_special_mask,
    input   wire   [7:0]   highest_priority_interrupt,   //from priority register  
-   input   wire           acknowledge, //flag from contol logic to indicate the start of interrupt
+   input   wire           acknowledge, //flag from contol logic to indicate the start of interrupt //latch in service
    input   wire   [7:0]   end_of_interrupt, // flag from contol logic to indicate the end of interrupt
    input   wire   [2:0]   specific_level_clear, //comes from ocw2 L0-L2
 
@@ -12,8 +12,8 @@ module ISR (
 );
    reg [7:0] next_in_service_register;
     always@* begin
-       next_in_service_register <= (acknowledge == 1'b1 ? highest_priority_interrupt : 8'b00000000); 
-        in_service_register <= next_in_service_register;    //f the reset signal is not asserted, it sets in_service_register to the value of next_in_service_register
+       next_in_service_register = (acknowledge == 1'b1 ? highest_priority_interrupt : 8'b00000000); 
+        in_service_register = next_in_service_register;    
    end
     reg [7:0] next_last_serviced;
    
@@ -57,7 +57,7 @@ module ISR (
 	end
 
     always @* begin
-			last_serviced <= next_last_serviced;
+			last_serviced = next_last_serviced;
     end
     
 endmodule
