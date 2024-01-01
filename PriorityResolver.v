@@ -13,7 +13,6 @@ module PriorityResolver (
   
  reg  [7:0] masked_interrupt_request;
  reg	[7:0] inservicemask;
- reg	[7:0] bottle;
  reg	[7:0] rotatedmask;
  reg	[7:0] rotatedirr;
  reg	[7:0] rotatedmaskedirr;
@@ -24,7 +23,6 @@ module PriorityResolver (
   begin
    masked_interrupt_request=interrupt_request_register& ~interrupt_mask;
    inservicemask=masked_interrupt_request;
- 	 bottle=interrupt_request_register;
    rotatedmask=interrupt_mask;
   end
  always@(*)
