@@ -1,6 +1,6 @@
 module Interrupt_Request(
     input wire Level_OR_Edge_trigger, //control input
-    input wire [7:0] Interrupt_Request_Pins, //in/out devices 
+    input wire [7:0] Interrupt_Request_Pins, //input/output devices 
     output reg [7:0] Interrupt_Request_Reg   
 );
 

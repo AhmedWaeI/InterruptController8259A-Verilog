@@ -1,94 +1,88 @@
 module Bus_Control_Logic_TB;
 
     // Inputs
-    reg clock;
     reg reset;
-    reg CS;
-    reg RD;
-    reg WR;
-    reg address;
-    reg [7:0] data_bus_in;
+    reg CS_bar;
+    reg RD_bar;
+    reg WR_bar;
+    reg A0;
+    reg [7:0] data_bus_buffer_in;
 
     // Outputs
-    wire [7:0] internal_data_bus;
-    wire write_initial_command_word_1;
-    wire write_initial_command_word_2_4;
-    wire write_operation_control_word_1;
-    wire write_operation_control_word_2;
-    wire write_operation_control_word_3;
+    wire [7:0] data_bus_buffer_out;
+    wire ICW_1;
+    wire ICW_2;
+    wire ICW_3;
+    wire ICW_4;
+    wire OCW_1;
+    wire OCW_2;
+    wire OCW_3;
     wire read;
 
     // Instantiate the module under test
-    Bus_Control_Logic uut (
-        .clock(clock),
+    Bus_Control_Logic dut (
         .reset(reset),
-        .CS(CS),
-        .RD(RD),
-        .WR(WR),
-        .address(address),
-        .data_bus_in(data_bus_in),
-        .internal_data_bus(internal_data_bus),
-        .write_initial_command_word_1(write_initial_command_word_1),
-        .write_initial_command_word_2_4(write_initial_command_word_2_4),
-        .write_operation_control_word_1(write_operation_control_word_1),
-        .write_operation_control_word_2(write_operation_control_word_2),
-        .write_operation_control_word_3(write_operation_control_word_3),
+        .CS_bar(CS_bar),
+        .RD_bar(RD_bar),
+        .WR_bar(WR_bar),
+        .A0(A0),
+        .data_bus_buffer_in(data_bus_buffer_in),
+        .internal_bus(),
+        .data_bus_buffer_out(data_bus_buffer_out),
+        .ICW_1(ICW_1),
+        .ICW_2(ICW_2),
+        .ICW_3(ICW_3),
+        .ICW_4(ICW_4),
+        .OCW_1(OCW_1),
+        .OCW_2(OCW_2),
+        .OCW_3(OCW_3),
         .read(read)
     );
 
-    // Clock generator
-    always #5 clock = ~clock;
+    // Clock
+    reg clk = 0;
+    always #5 clk = ~clk;
 
-    // Stimulus
+    // Testbench logic
     initial begin
         // Initialize inputs
-        clock = 0;
-        reset = 1;
-        CS = 0;
-        RD = 0;
-        WR = 0;
-        address = 0;
-        data_bus_in = 8'b00000000;
+      $dumpfile("dump.vcd"); $dumpvars;
+        reset = 0;
+        CS_bar = 0;
+        RD_bar = 0;
+        WR_bar = 0;
+        A0 = 0;
+        data_bus_buffer_in = 8'b00000000;
 
-        // Wait for reset to be released
-        #10 reset = 0;
-
-        // Test case 1: Write operation for initializing command word 1
-        WR = 1;
-        address = 0;
-        data_bus_in = 8'b00010000;
+        // Wait for some time for stable signals
         #10;
 
-        // Test case 2: Write operation for initializing command words 2 to 4
-        WR = 1;
-        address = 1;
-        data_bus_in = 8'b00001101;
+        // Testcase 1: Write operation
+        $display("Testcase 1: Write operation");
+        reset = 0;
+        CS_bar = 1;
+        RD_bar = 0;
+        WR_bar = 1;
+        A0 = 1;
+        data_bus_buffer_in = 8'b10101010;
+
+        // Wait for some time to observe outputs
         #10;
 
-        // Test case 3: Write operation for operation control word 1
-        WR = 1;
-        address = 1;
-        data_bus_in = 8'b00000111;
+        // Testcase 2: Read operation
+        $display("Testcase 2: Read operation");
+        reset = 0;
+        CS_bar = 1;
+        RD_bar = 1;
+        WR_bar = 0;
+        A0 = 0;
+        data_bus_buffer_in = 8'b00000000;
+
+        // Wait for some time to observe outputs
         #10;
 
-        // Test case 4: Write operation for operation control word 2
-        WR = 1;
-        address = 0;
-        data_bus_in = 8'b00000001;
-        #10;
-
-        // Test case 5: Write operation for operation control word 3
-        WR = 1;
-        address = 0;
-        data_bus_in = 8'b00000011;
-        #10;
-
-        // Test case 6: Read operation
-        RD = 1;
-        CS = 1;
-        #10;
-
-        // Finish simulation
+        // End simulation
         $finish;
     end
+
 endmodule
