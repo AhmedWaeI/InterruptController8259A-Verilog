@@ -25,25 +25,59 @@ module ISR_tb;
     .last_serviced(last_serviced)
   );
 
-  // Continuous printing for Test Case 1
-  always @(in_service_register or last_serviced) begin
-    $display("Test Case 1: Automatic EOI");
+  // Initial Stimulus
+  initial begin
+     $dumpfile("dump.vcd");
+    $dumpvars;
+    // Test case 1: Automatic EOI
+    $display("before any test case");
     $display("in_service_register = %b", in_service_register);
     $display("last_serviced = %b", last_serviced);
     $display("\n");
-  end
-
-  // Initial Stimulus
-  initial begin
-    // Test case 1: Automatic EOI
+    #10
     mode = 1;
     acknowledge = 1;
+   
     highest_priority_interrupt = 8'b00100000;
     end_of_interrupt = 8'b00100000;
     interrupt_special_mask = 8'b00000000; // Define interrupt_special_mask
+     #10
+    $display("after ack=1 case 1");
+    $display("in_service_register = %b", in_service_register);
+    $display("last_serviced = %b", last_serviced);
+    $display("\n");
+
     #10;
     acknowledge = 0;
+    #10
+    $display("after ack=0 case 1");
+    $display("in_service_register = %b", in_service_register);
+    $display("last_serviced = %b", last_serviced);
+    $display("\n");
     #10;
+    // Test case 2: Non-specific EOI
+    
+    mode = 0;
+     acknowledge = 1;  
+    highest_priority_interrupt = 8'b00000001;
+    end_of_interrupt = 8'b00000001;
+    interrupt_special_mask = 8'b00000000; // Define interrupt_special_mask
+    modes_of_end_of_interrupt = 3'b001;
+    #10
+    $display("after ack=1 case 2");
+    $display("in_service_register = %b", in_service_register);
+    $display("last_serviced = %b", last_serviced);
+    $display("\n");
+    #10;
+    acknowledge = 0;
+     #10
+    #10
+    $display("after ack=0 case 2");
+    $display("in_service_register = %b", in_service_register);
+    $display("last_serviced = %b", last_serviced);
+    $display("\n");
+    #10;
+   
 
   end
 
