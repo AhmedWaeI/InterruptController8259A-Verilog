@@ -3,7 +3,6 @@
 // implements the data bus buffering and read/write control logic for the 8259A PIC
 
 module Bus_Control_Logic (
-    input wire reset,
 
     input wire CS_bar, //chip select active low
     input wire RD_bar, //read enable(indicates a read operation is requested.)
