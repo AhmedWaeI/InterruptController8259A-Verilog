@@ -1,7 +1,6 @@
 module Bus_Control_Logic_TB;
 
     // Inputs
-    reg reset;
     reg CS_bar;
     reg RD_bar;
     reg WR_bar;
