@@ -9,7 +9,7 @@ module Bus_Control_Logic (
     input wire RD_bar, //read enable(indicates a read operation is requested.)
     input wire WR_bar, //write enable(indicates a write operation is requested.)
     input wire A0, //A0 of read/write Logic (Address bus signal that specifies the address for read/write operations.)
-     input wire [7:0] data_bus_buffer_in,, // 8-bit data bus input signal that carries the data to be written.
+     input wire [7:0] data_bus_buffer_in, // 8-bit data bus input signal that carries the data to be written.
 
     // Internal Bus
      inout wire   [7:0]   internal_bus,
