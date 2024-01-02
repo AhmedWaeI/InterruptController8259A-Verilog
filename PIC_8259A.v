@@ -20,13 +20,14 @@ module pic8259A (
 );
  wire [7:0] internal_data_bus;
 wire write_initial_command_word_1;
-wire write_initial_command_word_2_4;
+wire write_initial_command_word_2;
+wire write_initial_command_word_3;
+wire write_initial_command_word_4;
 wire write_operation_control_word_1;
 wire write_operation_control_word_2;
 wire write_operation_control_word_3;
 wire read;
   Bus_Control_Logic bus(
-    .reset(reset),
   .CS_bar(chip_select_n),
 		.RD_bar(read_enable_n),
 		.WR_bar(write_enable_n),
@@ -36,7 +37,9 @@ wire read;
 		.data_bus_buffer_in(data_bus_in),
 		.internal_bus(internal_data_bus),
 		.ICW_1(write_initial_command_word_1),
-		.ICW_2(write_initial_command_word_2_4),
+		.ICW_2(write_initial_command_word_2),
+		.ICW_3(write_initial_command_word_3),
+		.ICW_4(write_initial_command_word_4),
 		.OCW_1(write_operation_control_word_1),
 		.OCW_2(write_operation_control_word_2),
 		.OCW_3(write_operation_control_word_3),
@@ -85,8 +88,8 @@ wire read;
 		.priority_rotate(priority_rotate),
 		.freeze(freeze),
 		.latch_in_service(latch_in_service),
-    .clear_interrupt_request(clear_interrupt_request),
-    .mode(mode)
+    .clear_interrupt_request(clear_interrupt_request)
+    
 	);
   	wire [7:0] interrupt_request_register;
   Interrupt_Request IRR(
