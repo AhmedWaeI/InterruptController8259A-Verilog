@@ -28,6 +28,7 @@ reg call_address_interval_4_or_8_config;
 	wire buffered_mode_config;
 	wire buffered_master_or_slave_config;
 	wire auto_eoi_config;
+  wire mode;
   // Instantiate the module
   Control_Logic uut (
     .internal_data_bus(internal_data_bus),
@@ -55,7 +56,8 @@ reg call_address_interval_4_or_8_config;
     .priority_rotate(priority_rotate),
     .freeze(freeze),
     .latch_in_service(latch_in_service),
-    .clear_interrupt_request(clear_interrupt_request)
+    .clear_interrupt_request(clear_interrupt_request),
+    .mode(mode)
   );
 
   // Clock generation
@@ -119,7 +121,7 @@ reg call_address_interval_4_or_8_config;
     read = 1'b1;
     $finish;
   end/*
-    // Add more test cases
+   
     #10;
     interrupt_acknowledge_n = 1'b1;
     #10;
