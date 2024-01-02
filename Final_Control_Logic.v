@@ -61,12 +61,12 @@ module Control_Logic (
 				32'd1:
 					if (single_or_cascade_config == 1'b0)
 						next_command_state = 32'd2;
-					else if (set_icw4_config == 1'b1)
+				else if (set_icw4_config == 1'b1)  //IC4 signal
 						next_command_state = 32'd3;
 					else
 						next_command_state = 32'd0;
 				32'd2:
-					if (set_icw4_config == 1'b1)
+					if (set_icw4_config == 1'b1) //IC4 signal
 						next_command_state = 32'd3;
 					else
 						next_command_state = 32'd0;
