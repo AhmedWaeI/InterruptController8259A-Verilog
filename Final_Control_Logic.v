@@ -205,7 +205,7 @@ module Control_Logic (
   always @(*)
     begin
 	if (write_initial_command_word_4 == 1'b1)
-		buffered_mode_config <= internal_data_bus[2];//---------------------
+		buffered_mode_config <= internal_data_bus[3];//---------------------
 		else
 			buffered_mode_config <= buffered_mode_config;
 	   // assign slave_program_or_enable_buffer = ~buffered_mode_config;
