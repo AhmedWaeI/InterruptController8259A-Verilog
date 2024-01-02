@@ -1,5 +1,5 @@
 module Interrupt_Request(
-    input wire Level_OR_Edge_trigger, //control input
+    input wire Level_OR_Edge_trigger, //flag which shows the value of the bit[3] in ICW1
     input wire [7:0] Interrupt_Request_Pins, //input/output devices 
     output reg [7:0] Interrupt_Request_Reg   
 );
