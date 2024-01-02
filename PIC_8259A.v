@@ -62,6 +62,7 @@ wire read;
 	wire [7:0] clear_interrupt_request;
   	wire mode;
   Control_Logic  u_Control_Logic(
+    .mode(mode),
 		.casc_in(cascade_in),
 		.casc_out(cascade_out),
 		.casc_io(cascade_io),
