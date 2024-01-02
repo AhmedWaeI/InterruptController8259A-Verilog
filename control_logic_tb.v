@@ -20,7 +20,14 @@ reg call_address_interval_4_or_8_config;
   wire [2:0] priority_rotate;
   wire freeze, latch_in_service;
   wire [7:0] clear_interrupt_request;
-  wire set_icw4_config, buffered_mode_config, auto_eoi_config,single_or_cascade_config;
+ // wire set_icw4_config, buffered_mode_config, auto_eoi_config,single_or_cascade_config;
+ // reg call_address_interval_4_or_8_config;
+	reg single_or_cascade_config;
+	reg set_icw4_config;
+	reg [7:0] cascade_device_config;
+	wire buffered_mode_config;
+	wire buffered_master_or_slave_config;
+	wire auto_eoi_config;
   // Instantiate the module
   Control_Logic uut (
     .internal_data_bus(internal_data_bus),
@@ -79,27 +86,27 @@ reg call_address_interval_4_or_8_config;
 
      $display("Testcase 1: level(0)/edge(1)");
     ICW_1 = 1'b1;
-    internal_data_bus = 8'h08;
+    internal_data_bus = 8'h08;//level_or_edge_toriggered_config=1
     #10;
     $display("Testcase 2: interval_8(0)/interval_4(1)");
     ICW_1 = 1'b1;
-    internal_data_bus = 8'h04;
+    internal_data_bus = 8'h0C; //call_address_interval_4_or_8_config=1
     #10;
     $display("Testcase 3: cascade(0)/single(1)");
     ICW_1 = 1'b1;
-    internal_data_bus = 8'h02;
+    internal_data_bus = 8'h0E;//single_or_cascade_config=1
     #10;
     $display("Testcase 4: ICW4_Notneeded(0)/ICW4_needed(1)");
     ICW_1 = 1'b1;
-    internal_data_bus = 8'h01;
+    internal_data_bus = 8'h0F;//set_icw4_config=1
     #10;
     $display("Testcase 5: buffered mode slave(0)/buffered mode master(1)");
    ICW_2_4 = 1'b1;
-    internal_data_bus = 8'h04;
+    internal_data_bus = 8'h04;//buffered_mode_config=1
     #10;
     $display("Testcase 6: EOI(0)/AEOI(1)");
     ICW_2_4 = 1'b1;
-    internal_data_bus = 8'h02;
+    internal_data_bus = 8'h02;//auto_eoi_config=1
     #10;
     
    
