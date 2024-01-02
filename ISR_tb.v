@@ -57,7 +57,7 @@ module ISR_tb;
     #10;
     // Test case 2: Non-specific EOI
     
-    mode = 0;
+    
      acknowledge = 1;  
     highest_priority_interrupt = 8'b00000001;
     end_of_interrupt = 8'b00000001;
@@ -69,7 +69,7 @@ module ISR_tb;
     $display("last_serviced = %b", last_serviced);
     $display("\n");
     #10;
-    acknowledge = 0;
+    mode = 0;
      #10
     #10
     $display("after ack=0 case 2");
