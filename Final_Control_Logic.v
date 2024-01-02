@@ -31,7 +31,8 @@ module Control_Logic (
 	output reg [2:0] priority_rotate,
 	output reg freeze,
 	output reg latch_in_service,
-	output reg [7:0] clear_interrupt_request
+  output reg [7:0] clear_interrupt_request,
+  output reg mode
 	);
 
 	reg [10:0] interrupt_vector_address;
@@ -252,12 +253,22 @@ module Control_Logic (
     begin
 	    if (OCW_2 == 1'b1)
 			case (internal_data_bus[7:5])
-				3'b000: auto_rotate_mode <= 1'b0;
-				3'b100: auto_rotate_mode <= 1'b1;
-				default: auto_rotate_mode <= auto_rotate_mode;
+				3'b000: begin
+                  auto_rotate_mode <= 1'b0;
+                  mode<=0;
+                end
+				3'b100:begin
+                  auto_rotate_mode <= 1'b1;
+                  mode<=1;
+                end
+              
+				default: mode <= 0;
 			endcase
 		else
+          begin
 			auto_rotate_mode <= auto_rotate_mode;
+            mode<=0;
+          end
 
     end
   always @(*)
