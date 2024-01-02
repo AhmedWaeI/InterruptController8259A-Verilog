@@ -151,7 +151,7 @@ module Control_Logic (
   
   always @(*)
     begin
-	    if (ICW_2 == 1'b1)
+	    if (write_initial_command_word_2 == 1'b1)
 	      interrupt_vector_address[2:0] <= internal_data_bus[7:3];
 		else
 			interrupt_vector_address[2:0] <= interrupt_vector_address[2:0];
