@@ -72,7 +72,7 @@ module ISR_tb;
     mode = 0;
      #10
     #10
-    $display("after ack=0 case 2");
+    $display("after mode=0 case 2");
     $display("in_service_register = %b", in_service_register);
     $display("last_serviced = %b", last_serviced);
     $display("\n");
