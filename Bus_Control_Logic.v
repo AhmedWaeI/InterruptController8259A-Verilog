@@ -24,7 +24,7 @@ module Bus_Control_Logic (
     output  wire read //Output signal indicating a read operation
 );
 
-    assign internal_bus = (~WR_bar & ~CS_bar) ? data_bus_buffer_in : internal_data_bus;
+    assign internal_bus = (~WR_bar & ~CS_bar) ? data_bus_buffer_in : internal_bus;
     assign data_bus_buffer_out = (~RD_bar & ~CS_bar) ? internal_bus : 8'bzzzzzzzz;
     
     // Generate write request flags
