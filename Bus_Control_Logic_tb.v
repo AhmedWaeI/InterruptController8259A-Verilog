@@ -1,7 +1,6 @@
 module Bus_Control_Logic_TB;
 
     // Inputs
-    reg reset;
     reg CS_bar;
     reg RD_bar;
     reg WR_bar;
@@ -21,7 +20,6 @@ module Bus_Control_Logic_TB;
 
     // Instantiate the module under test
     Bus_Control_Logic dut (
-        .reset(reset),
         .CS_bar(CS_bar),
         .RD_bar(RD_bar),
         .WR_bar(WR_bar),
@@ -47,7 +45,6 @@ module Bus_Control_Logic_TB;
     initial begin
         // Initialize inputs
       $dumpfile("dump.vcd"); $dumpvars;
-        reset = 0;
         CS_bar = 0;
         RD_bar = 0;
         WR_bar = 0;
@@ -59,7 +56,6 @@ module Bus_Control_Logic_TB;
 
         // Testcase 1: Write operation
         $display("Testcase 1: Write operation");
-        reset = 0;
         CS_bar = 1;
         RD_bar = 0;
         WR_bar = 1;
@@ -71,7 +67,6 @@ module Bus_Control_Logic_TB;
 
         // Testcase 2: Read operation
         $display("Testcase 2: Read operation");
-        reset = 0;
         CS_bar = 1;
         RD_bar = 1;
         WR_bar = 0;

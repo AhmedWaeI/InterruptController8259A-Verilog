@@ -151,8 +151,8 @@ module Control_Logic (
   
   always @(*)
     begin
-      if (ICW_1 == 1'b1)
-			interrupt_vector_address[2:0] <= internal_data_bus[7:5];
+	    if (ICW_2 == 1'b1)
+	      interrupt_vector_address[2:0] <= internal_data_bus[7:3];
 		else
 			interrupt_vector_address[2:0] <= interrupt_vector_address[2:0];
     end
@@ -205,7 +205,7 @@ module Control_Logic (
   always @(*)
     begin
 	if (write_initial_command_word_4 == 1'b1)
-			buffered_mode_config <= internal_data_bus[3];
+		buffered_mode_config <= internal_data_bus[2];//---------------------
 		else
 			buffered_mode_config <= buffered_mode_config;
 	   // assign slave_program_or_enable_buffer = ~buffered_mode_config;
