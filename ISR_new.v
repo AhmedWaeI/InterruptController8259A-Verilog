@@ -3,7 +3,7 @@ module ISR (
    input   wire   [2:0]   modes_of_end_of_interrupt,    // comes from ocw2 D7-D5 and defined modes of interrupt 
    input   wire   [7:0]   interrupt_special_mask,      // from IMR
    input   wire   [7:0]   highest_priority_interrupt, //from priority register  
-   input   wire           acknowledge,               //flag from control logic to indicate the start of interrupt //latch in service
+   input   wire           acknowledge,               //flag from control logic to indicate the start of interrupt 
    input   wire   [7:0]   end_of_interrupt,         // reg from control logic to indicate the end of interrupt
    input   wire   [2:0]   specific_level_clear,    //comes from ocw2 L0-L2
 
