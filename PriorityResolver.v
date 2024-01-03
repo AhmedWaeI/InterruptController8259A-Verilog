@@ -139,7 +139,7 @@ module PriorityResolver (
        end
         if(inservicemask==0)
           begin
-            interrupt=0;
+            interrupt=128;
           end
         
       end
@@ -195,7 +195,7 @@ module PriorityResolver (
        end
         if(rotatedmaskedirr2==0)
           begin
-            interrupt=0;
+            interrupt=128;
           end
       end
     end    
